@@ -1,0 +1,5 @@
+{
+  "name": "Reaction-Diffusion Playground",
+  "description": "An interactive real-time simulation of the Gray-Scott reaction-diffusion model using WebGL. Create complex organic patterns and experiment with chemical feed/kill rates.",
+  "requestFramePermissions": []
+}
