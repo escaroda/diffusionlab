@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SimulationParams, Preset } from '../types';
 import { PRESETS } from '../constants';
 
@@ -14,6 +14,7 @@ interface ControlsProps {
   onRandomize: () => void;
   onShakeStart: () => void;
   onShakeEnd: () => void;
+  onSaveImage: () => void;
 }
 
 const Slider: React.FC<{
@@ -44,7 +45,9 @@ const Slider: React.FC<{
   </div>
 );
 
-const Controls: React.FC<ControlsProps> = ({ params, setParams, onReset, onClear, onPause, isPaused, onExport, onImport, onRandomize, onShakeStart, onShakeEnd }) => {
+const Controls: React.FC<ControlsProps> = ({ params, setParams, onReset, onClear, onPause, isPaused, onExport, onImport, onRandomize, onShakeStart, onShakeEnd, onSaveImage }) => {
+  const [isMinimized, setIsMinimized] = useState(false);
+
   const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const preset = PRESETS.find(p => p.name === e.target.value);
     if (preset) {
@@ -53,25 +56,55 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, onReset, onClear
   };
 
   return (
-    <div className="fixed top-4 right-4 w-72 bg-gray-900/80 backdrop-blur-md border border-gray-700 p-5 rounded-xl shadow-2xl text-white z-50 transition-opacity duration-300 max-h-[90vh] overflow-y-auto scrollbar-hide">
-      <div className="mb-4">
-        <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">
-          Diffusion Lab
-        </h1>
-        <div className="flex flex-col gap-2">
-           <button 
-            onClick={onRandomize}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-900/50 hover:bg-emerald-800/50 rounded-lg transition-colors text-emerald-300 text-xs font-semibold w-full"
-            title="I Feel Lucky (Random Parameters)"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-            </svg>
-            I Feel Lucky
-          </button>
-          <div className="grid grid-cols-2 gap-2">
-             <button 
-              onClick={onExport}
+    <div className={`fixed top-4 right-4 bg-gray-900/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-2xl text-white z-50 transition-all duration-300 max-h-[90vh] overflow-y-auto scrollbar-hide ${isMinimized ? 'p-3' : 'w-72 p-5'}`}>
+      <div className={`flex justify-end items-center ${isMinimized ? '' : 'mb-4 justify-between'}`}>
+        {!isMinimized && (
+          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Diffusion Lab
+          </h1>
+        )}
+        <button 
+          onClick={() => setIsMinimized(!isMinimized)} 
+          className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-gray-800 transition-colors" 
+          title={isMinimized ? "Maximize" : "Minimize"}
+        >
+          {isMinimized ? (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+          )}
+        </button>
+      </div>
+
+      {!isMinimized && (
+        <>
+          <div className="mb-4">
+            <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-2">
+                 <button 
+                  onClick={onRandomize}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-900/50 hover:bg-emerald-800/50 rounded-lg transition-colors text-emerald-300 text-xs font-semibold w-full"
+                  title="I Feel Lucky (Random Parameters)"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                  Lucky
+                </button>
+                <button 
+                  onClick={onSaveImage}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 bg-pink-900/50 hover:bg-pink-800/50 rounded-lg transition-colors text-pink-300 text-xs font-semibold w-full"
+                  title="Save Image"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Save Image
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                 <button 
+                  onClick={onExport}
               className="flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-900/50 hover:bg-blue-800/50 rounded-lg transition-colors text-blue-300 text-xs font-semibold"
               title="Export State"
             >
@@ -349,6 +382,8 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, onReset, onClear
           </a>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

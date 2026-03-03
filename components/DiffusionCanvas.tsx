@@ -17,13 +17,15 @@ interface DiffusionCanvasProps {
   importFile: File | null;
   onImportComplete: () => void;
   isShaking: boolean;
+  saveImageSignal: number;
 }
 
-const DiffusionCanvas: React.FC<DiffusionCanvasProps> = ({ params, setParams, resetSignal, clearSignal, isPaused, exportSignal, importFile, onImportComplete, isShaking }) => {
+const DiffusionCanvas: React.FC<DiffusionCanvasProps> = ({ params, setParams, resetSignal, clearSignal, isPaused, exportSignal, importFile, onImportComplete, isShaking, saveImageSignal }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webglRef = useRef<WebGLContextState>(null);
   const animationFrameRef = useRef<number>(0);
   const accumulatedTimeRef = useRef<number>(0);
+  const needsSaveImage = useRef<boolean>(false);
   const mouseRef = useRef<{ x: number, y: number, lastX: number, lastY: number, down: boolean, shiftKey: boolean }>({ x: 0, y: 0, lastX: 0, lastY: 0, down: false, shiftKey: false });
 
   const initWebGL = useCallback(() => {
@@ -37,7 +39,7 @@ const DiffusionCanvas: React.FC<DiffusionCanvasProps> = ({ params, setParams, re
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const gl = canvas.getContext('webgl2', { antialias: false });
+    const gl = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
     if (!gl) {
       alert("WebGL2 not supported");
       return;
@@ -221,6 +223,15 @@ const DiffusionCanvas: React.FC<DiffusionCanvasProps> = ({ params, setParams, re
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
+    if (needsSaveImage.current && canvasRef.current) {
+        const dataURL = canvasRef.current.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `diffusion-${Date.now()}.png`;
+        link.href = dataURL;
+        link.click();
+        needsSaveImage.current = false;
+    }
+
     animationFrameRef.current = requestAnimationFrame(renderFrame);
   }, [params, isPaused, isShaking]);
 
@@ -320,6 +331,13 @@ const DiffusionCanvas: React.FC<DiffusionCanvasProps> = ({ params, setParams, re
      gl.bindTexture(gl.TEXTURE_2D, textureB);
      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, width, height, 0, gl.RGBA, gl.FLOAT, data);
   }, [clearSignal]);
+
+  // Save Image
+  useEffect(() => {
+      if (saveImageSignal > 0) {
+          needsSaveImage.current = true;
+      }
+  }, [saveImageSignal]);
 
   // Export State
   useEffect(() => {

@@ -34,6 +34,7 @@ const App: React.FC = () => {
   const [clearSignal, setClearSignal] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [exportSignal, setExportSignal] = useState(0);
+  const [saveImageSignal, setSaveImageSignal] = useState(0);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [isShaking, setIsShaking] = useState(false);
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
   }
 
   const handleExport = () => setExportSignal(prev => prev + 1);
+  const handleSaveImage = () => setSaveImageSignal(prev => prev + 1);
   const handleImport = (file: File) => setImportFile(file);
   const handleImportComplete = () => setImportFile(null);
   const handleShakeStart = () => setIsShaking(true);
@@ -97,6 +99,7 @@ const App: React.FC = () => {
         clearSignal={clearSignal}
         isPaused={isPaused}
         exportSignal={exportSignal}
+        saveImageSignal={saveImageSignal}
         importFile={importFile}
         onImportComplete={handleImportComplete}
         isShaking={isShaking}
@@ -109,6 +112,7 @@ const App: React.FC = () => {
         onPause={handlePause}
         isPaused={isPaused}
         onExport={handleExport}
+        onSaveImage={handleSaveImage}
         onImport={handleImport}
         onShakeStart={handleShakeStart}
         onShakeEnd={handleShakeEnd}
