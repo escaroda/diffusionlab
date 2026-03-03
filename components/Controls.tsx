@@ -57,9 +57,9 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, onReset, onClear
 
   return (
     <div className={`fixed top-4 right-4 bg-gray-900/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-2xl text-white z-50 transition-all duration-300 max-h-[90vh] overflow-y-auto scrollbar-hide ${isMinimized ? 'p-3' : 'w-72 p-5'}`}>
-      <div className={`flex justify-end items-center ${isMinimized ? '' : 'mb-4 justify-between'}`}>
+      <div className={`flex items-center ${isMinimized ? 'justify-end' : 'justify-between mb-4'}`}>
         {!isMinimized && (
-          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-left">
             Diffusion Lab
           </h1>
         )}
